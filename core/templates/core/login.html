@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-light">
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm p-4">
+          <h4 class="text-center mb-4">Login</h4>
+
+          <!-- ✅ Login Form -->
+          <form id="login-form">
+            <!-- Email/Username Input -->
+            <div class="form-outline mb-4">
+              <input type="text" id="username" class="form-control" required />
+              <label class="form-label" for="username">Username</label>
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-outline mb-4">
+              <input type="password" id="password" class="form-control" required />
+              <label class="form-label" for="password">Password</label>
+            </div>
+
+            <!-- Remember me (optional) -->
+            <div class="row mb-4">
+              <div class="col d-flex justify-content-center">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="remember" />
+                  <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+              </div>
+              <div class="col text-end">
+                <a href="#">Forgot password?</a>
+              </div>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary w-100 mb-3">Sign in</button>
+
+            <div id="error" class="text-danger text-center mb-2"></div>
+
+            <!-- Register redirect -->
+            <div class="text-center">
+              <p>Not a member? <a href="/register/">Register</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Login Script -->
+  <script>
+    document.getElementById("login-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const payload = {
+        username: document.getElementById("username").value.trim(),
+        password: document.getElementById("password").value.trim()
+      };
+
+      const response = await fetch("http://127.0.0.1:8000/token/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
+
+        alert("Login successful!");
+        window.location.href = "/dashboard/"; 
+      } else {
+        let errorMsg = data.detail || "Login failed. Try again.";
+        document.getElementById("error").innerText = errorMsg;
+      }
+    });
+  </script>
+</body>
+</html>
